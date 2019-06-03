@@ -3,7 +3,6 @@
  *
  * Created: 5/21/2019 2:53:33 PM
  * Author : Deven Fafard
- * 
  */ 
 
 #include <avr/io.h>
@@ -12,14 +11,15 @@
 #include <timer.h>
 #include <scheduler.h>
 
-#define F_CPU 8000000
+#define F_CPU 8000000          //For ATmega1284
 #define LED_STRIP_PORT PORTB
 #define LED_STRIP_DDR DDRB
 #define LED_STRIP_PIN 4
-#define LED_COUNT 60
+#define LED_COUNT 15
 
 enum LetterStates { INIT, S0, S1, S2, S3 } state;
-	
+
+//Struct to hold RBG values
 typedef struct rgb_color
 {
 	unsigned char red;
@@ -27,6 +27,7 @@ typedef struct rgb_color
 	unsigned char blue;
 } rgb_color;
 
+//Array of RBG colors - essentially a representation of the LED strip
 rgb_color colors[LED_COUNT];
 
 unsigned char A0 = 0x00;
@@ -124,7 +125,7 @@ void __attribute__((noinline)) led_strip_write(rgb_color * colors, unsigned int 
 	
 void SMTick1()
 {
-	//Transitions
+	//State transitions
 	switch(state)
 	{
 		case(INIT):
@@ -196,6 +197,7 @@ void SMTick1()
 	//State functions
 	switch(state)
 	{
+		//For each of the LEDs, set the color, then send color info to strip over PORTB
 		case(INIT):
 			for(unsigned char i = 0; i < LED_COUNT; ++i)
 			{
